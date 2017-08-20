@@ -2,12 +2,22 @@
 
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
+  canvas.width = document.body.clientWidth; //document.width is obsolete
+  canvas.height = document.body.clientHeight; //document.height is obsolete
+  canvasW = canvas.width;
+  canvasH = canvas.height;
 
-  var WIDTH = 640;
-  var HEIGHT = 480;
+  var WIDTH = document.body.clientWidth;
+  var HEIGHT = document.body.clientHeight;
 
-  var NODE_WIDTH = 100;
-  var NODE_HEIGHT = 12;
+  var NODE_DRIFT = 0.01;
+
+  var NODE_WIDTH = 200;
+  var NODE_HEIGHT = 24;
+
+  var MAX_SUSPISION = 10;
+
+  var suspision = 0;
 
   var Node = function(x, y, string) {
     this.x = x;
@@ -112,6 +122,7 @@
   var optionNodes = [];
 
   var update = function() {
+    suspision ++;
     var stringOptions = get_options(currentNode.string);
     currentNode.x = WIDTH / 2;
     currentNode.y = HEIGHT / 2
@@ -121,18 +132,37 @@
       var pos = random_center(WIDTH, HEIGHT, 300);
       optionNodes.push(new Node(pos.x, pos.y, stringOptions[i]));
     }
-    console.log(get_subject_info(currentNode.string, person));
+    document.getElementById("info").innerHTML = get_subject_info(currentNode.string, person).join("<br/>");
   }
 
   update();
 
   var draw = function() {
+
+    for(var i=0; i<optionNodes.length; i++) {
+      optionNodes[i].apply_force({
+        x: (Math.random() * NODE_DRIFT) - (NODE_DRIFT / 2),
+        y: (Math.random() * NODE_DRIFT) - (NODE_DRIFT / 2)
+      });
+      optionNodes[i].updatex();
+      optionNodes[i].updatey();
+    }
+
+    currentNode.apply_force({
+      x: (Math.random() * NODE_DRIFT) - (NODE_DRIFT / 2),
+      y: (Math.random() * NODE_DRIFT) - (NODE_DRIFT / 2)
+    });
+    currentNode.updatex();
+    currentNode.updatey();
+
+
+
     ctx.textBaseline = 'hanging';
     ctx.fillStyle = "black";
     ctx.strokeStyle = "white";
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    ctx.font = "12px serif"
+    ctx.font = "24px serif"
     ctx.fillStyle = "grey";
     currentNode.draw(ctx);
 
