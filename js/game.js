@@ -88,6 +88,68 @@
 
   };
 
+  var generate_knowledge_graph = function(person) {
+    var k_nodes = {
+      "hobbies": [],
+      "job": "",
+      "family": []
+    };
+
+    for(var i=0; i<person.hobbies.length; i++) {
+      var hobby = "";
+      if(maybe_lie(20)) {
+        hobby = generate_random_hobby();
+      } else {
+        hobby = person.hobbies[i];
+      }
+      k_nodes["hobbies"].push(hobby);
+    }
+
+    var job = "";
+    if(maybe_lie(20)) {
+      job = generate_random_job();
+    } else {
+      job = person.job;
+    }
+    k_nodes["job"] = job;
+
+    var familyMembers = Object.keys(person.family)
+
+    for(var i = 0; i < familyMembers.length; i++) {
+      var familyMember = familyMembers[i];
+      var job = ""
+      if(maybe_lie(40)) {
+        job = generate_random_job();
+      } else {
+        job = person.family[familyMember].job;
+      }
+
+      var hobbies = [];
+      for(var i = 0; i < person.family[familyMember].hobbies.length; i++) {
+        if(maybe_lie(40)) {
+          hobbies.push(generate_random_hobby);
+        } else {
+          hobbies.push(person.family[familyMember].hobbies[i]);
+        }
+      }
+
+      var familyNode = {
+        "relation": familyMember,
+        "job": job,
+        "hobbies": hobbies
+      }
+
+      k_nodes["family"].push(familyNode);
+    }
+
+    return k_nodes;
+
+  };
+
+  var maybe_lie = function(lie_chance) {
+    Math.random() * 100 <= lie_chance
+  };
+
   var resolveNode = function(nodeString) {
     for(var i in nodes) {
       if(nodeString == nodes[i]) {
@@ -117,6 +179,7 @@
   };
 
   var person = generate_person("David");
+  console.log(generate_knowledge_graph(person));
   var currentTopic = get_random_start_topic(person);
   var currentNode = new Node(WIDTH / 2, HEIGHT / 2, currentTopic);
   var optionNodes = [];
@@ -180,11 +243,11 @@
   canvas.addEventListener("click", function(event) {
     var foundCollision = false;
     for(var i=0; i<optionNodes.length && !foundCollision; i++) {
-      if(event.clientX > optionNodes[i].x 
+      if(event.clientX > optionNodes[i].x
         && event.clientX < optionNodes[i].x + optionNodes[i].width
-        && event.clientY > optionNodes[i].y 
+        && event.clientY > optionNodes[i].y
         && event.clientY < optionNodes[i].y + optionNodes[i].height) {
-        
+
         foundCollision = true;
         currentNode = optionNodes[i];
         update();

@@ -38,3 +38,11 @@ var adjecencies = {
   28: [27, 29, 14, 16, 17],
   29: [27, 28]
 };
+
+var generate_random_hobby = function() {
+  return "Books";
+}
+
+var generate_random_job = function() {
+  return "Politician";
+}
